@@ -7,8 +7,8 @@ TSTATE_FILE="${DIR}/terraform.tfstate"
 BOSH_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcInfraSubnet_az1 | grep cidr_block | awk '{print $3}')
 BOSH_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcInfraSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
 SECURITY_GROUP=$(terraform state show -state ${TSTATE_FILE} aws_security_group.directorSG | grep id | head -n 1 | awk '{print $3}')
-ERT_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep cidr_block | awk '{print $3}')
-ERT_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
+bosh_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep cidr_block | awk '{print $3}')
+bosh_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
 
 WEB_LOAD_BALANCER=$(terraform state show -state ${TSTATE_FILE} aws_elb.concourse | grep name | tail -n 1 | awk '{print $3}')
 
@@ -20,7 +20,7 @@ function indexCidr() {
 internal_gw=$(indexCidr ${BOSH_CIDR} 1)
 internal_ip=$(indexCidr ${BOSH_CIDR} 6)
 
-ert_internal_gw=$(indexCidr ${ERT_CIDR} 1)
+bosh_internal_gw=$(indexCidr ${bosh_CIDR} 1)
 
 
 echo "director_name: bosh_aws" > ${DIRECTOR_CONFIG}
@@ -29,9 +29,9 @@ echo "internal_gw: ${internal_gw}" >> ${DIRECTOR_CONFIG}
 echo "internal_ip: ${internal_ip}" >> ${DIRECTOR_CONFIG}
 echo "subnet_id: ${BOSH_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
 echo "default_security_groups: [${SECURITY_GROUP}]" >> ${DIRECTOR_CONFIG}
-echo "ert_internal_cidr: ${ERT_CIDR}" >>${DIRECTOR_CONFIG}
-echo "ert_internal_gw: ${ert_internal_gw}" >>${DIRECTOR_CONFIG}
-echo "ert_subnet_id: ${ERT_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
+echo "bosh_internal_cidr: ${bosh_CIDR}" >>${DIRECTOR_CONFIG}
+echo "bosh_internal_gw: ${bosh_internal_gw}" >>${DIRECTOR_CONFIG}
+echo "bosh_subnet_id: ${bosh_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
 echo "region": ${TF_VAR_aws_region} >> ${DIRECTOR_CONFIG}
 echo "az": ${TF_VAR_az1} >> ${DIRECTOR_CONFIG}
 echo "access_key_id": ${TF_VAR_aws_access_key} >> ${DIRECTOR_CONFIG}
