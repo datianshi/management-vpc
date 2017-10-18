@@ -1,0 +1,6 @@
+env.sh
+vpn.txt
+ipsec.conf
+ipsec.secrets
+terraform.tfstate
+terraform.tfstate.backup

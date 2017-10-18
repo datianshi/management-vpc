@@ -1,0 +1,10 @@
+export TF_VAR_aws_access_key=
+export TF_VAR_aws_secret_key=
+export TF_VAR_aws_key_name=pcf-sding
+export TF_VAR_environment=cf_mini
+export TF_VAR_amis_nat=ami-1c2a9e7c
+export TF_VAR_jumpbox_ami=ami-7c22b41c
+export TF_VAR_aws_region=us-west-2
+export TF_VAR_aws_cert_arn=
+export TF_VAR_az1=us-west-2b
+export PRIVATE_KEY_PATH=/Users/sding/work/aws/personal/pcf-sding.pem
