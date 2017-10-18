@@ -14,5 +14,6 @@ scp -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ${TSTATE_FILE} ${ENV_FI
 ssh -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} 'bash -s' <<ENDSSH
   cd management-vpc
   source env.sh
+  git submodule init && git submodule update
   ./generate_director_yml.sh
 ENDSSH
