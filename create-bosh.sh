@@ -9,7 +9,6 @@ fi
 
 command="$cmd bosh-deployment/bosh.yml \
   -o bosh-deployment/uaa.yml \
-  -o bosh-deployment/config-server.yml \
   -o bosh-deployment/aws/cpi.yml \
   --vars-store ./creds.yml \
   --vars-file ./director.yml"
