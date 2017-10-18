@@ -16,4 +16,5 @@ ssh -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} 'b
   source env.sh
   git submodule init && git submodule update
   ./generate_director_yml.sh
+  ./create-bosh.sh
 ENDSSH
