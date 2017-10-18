@@ -1,11 +1,11 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DIRECTOR_CONFIG="${DIR}/../director.yml"
+DIRECTOR_CONFIG="${DIR}/director.yml"
 TSTATE_FILE="${DIR}/terraform.tfstate"
 
-BOSH_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcInfraSubnet_az1 | grep cidr_block | awk '{print $3}')
-BOSH_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcInfraSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
+BOSH_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep cidr_block | awk '{print $3}')
+BOSH_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
 SECURITY_GROUP=$(terraform state show -state ${TSTATE_FILE} aws_security_group.directorSG | grep id | head -n 1 | awk '{print $3}')
 bosh_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep cidr_block | awk '{print $3}')
 bosh_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
