@@ -9,9 +9,7 @@ releases:
 - name: consul
   version: latest
 - name: vault
-  version: 0.6.2
-  url: https://bosh.io/d/github.com/cloudfoundry-community/vault-boshrelease?v=0.6.2
-  sha1: 36fd3294f756372ff9fbbd6dfac11fe6030d02f9
+  version: latest
 
 stemcells:
 - alias: trusty
