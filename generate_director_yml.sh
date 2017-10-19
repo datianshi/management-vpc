@@ -33,6 +33,7 @@ echo "internal_gw: ${internal_gw}" >> ${DIRECTOR_CONFIG}
 echo "internal_ip: ${internal_ip}" >> ${DIRECTOR_CONFIG}
 echo "subnet_id: ${BOSH_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
 echo "default_security_groups: [${SECURITY_GROUP}]" >> ${DIRECTOR_CONFIG}
+echo "vault_static_ip_1: ${vault_static_ip_1}" >> ${DIRECTOR_CONFIG}
 echo "vault_static_ips: [${vault_static_ip_1},${vault_static_ip_2},${vault_static_ip_3}]" >> ${DIRECTOR_CONFIG}
 echo "bosh_internal_cidr: ${bosh_CIDR}" >>${DIRECTOR_CONFIG}
 echo "bosh_internal_gw: ${bosh_internal_gw}" >>${DIRECTOR_CONFIG}
