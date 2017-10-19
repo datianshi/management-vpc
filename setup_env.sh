@@ -10,7 +10,7 @@ JUMPBOX_IP=$(terraform state show -state ${TSTATE_FILE} aws_instance.jumpbox | g
 
 ssh -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} 'rm -rf management-vpc && git clone https://github.com/datianshi/management-vpc'
 scp -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ${TSTATE_FILE} ${ENV_FILE} ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP}:./management-vpc/
-ssh -tt -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} 'bash -s' <<ENDSSH
+ssh -tt -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} 'bash -es' <<ENDSSH
   cd management-vpc
   source env.sh
   git submodule init && git submodule update

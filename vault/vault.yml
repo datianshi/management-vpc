@@ -61,7 +61,7 @@ variables:
   options:
     is_ca: true
     common_name: vaultCA
-    alternative_names: ((static_ips))
+    alternative_names: ((vault_static_ips))
 - name: vault-tls
   type: certificate
   options:
