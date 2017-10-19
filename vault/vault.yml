@@ -20,8 +20,6 @@ instance_groups:
 - name: vault
   instances: 3
   vm_type: medium
-  vm_extensions:
-  - web_load_balancer
   stemcell: trusty
   azs: [z1]
   networks:

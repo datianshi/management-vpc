@@ -32,7 +32,7 @@ networks:
     azs: [z1]
     dns: [8.8.8.8]
     reserved: []
-    static: []
+    static: ((vault_static_ips))
     cloud_properties:
       subnet: ((bosh_subnet_id))
 - name: vip
