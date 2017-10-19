@@ -18,6 +18,7 @@ ssh -tt -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP
   ./create-bosh.sh
   BOSH_WORK_DIR=../bosh_work ./create_cloud_config.sh
   BOSH_WORK_DIR=../bosh_work ./upload_stemcell_release.sh
+  BOSH_WORK_DIR=../bosh_work ./create_vault.sh
   BOSH_WORK_DIR=../bosh_work ./create_concourse.sh
   exit
 ENDSSH

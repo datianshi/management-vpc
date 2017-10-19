@@ -1,0 +1,71 @@
+# Sample deployment bosh 2.0 style manifest for
+# depoying an HA vault
+# Run deploy with --vars-store=vars.yml to auto-gen self-signed certs
+# Must have a network, disk, and vm type called default
+# in your cloud config, or modify the
+name: vault
+
+releases:
+- name: consul
+  version: latest
+- name: vault
+  version: 0.6.2
+  url: https://bosh.io/d/github.com/cloudfoundry-community/vault-boshrelease?v=0.6.2
+  sha1: 36fd3294f756372ff9fbbd6dfac11fe6030d02f9
+
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+
+instance_groups:
+- name: vault
+  instances: 3
+  vm_type: medium
+  vm_extensions:
+  - web_load_balancer
+  stemcell: trusty
+  azs: [z1]
+  networks:
+  - name: default
+    static_ips: ((vault_static_ips))
+  persistent_disk_type: medium
+
+  jobs:
+  - name: consul
+    release: consul
+    provides:
+      consul_servers: { as: consul_leaders }
+    consumes:
+      consul_servers: { from: consul_leaders }
+
+  - name: vault
+    release: vault
+    properties:
+      vault:
+        storage:
+          use_consul: true
+        listener:
+          tcp:
+            tls:
+              certificate: ((vault-tls.certificate))
+              key: ((vault-tls.private_key))
+update:
+  canaries: 1
+  canary_watch_time: 1000-60000
+  max_in_flight: 1
+  serial: true
+  update_watch_time: 1000-60000
+
+variables:
+- name: vault-ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: vaultCA
+    alternative_names: ((static_ips))
+- name: vault-tls
+  type: certificate
+  options:
+    ca: vault-ca
+    common_name: vault

@@ -20,6 +20,10 @@ function indexCidr() {
 internal_gw=$(indexCidr ${BOSH_CIDR} 1)
 internal_ip=$(indexCidr ${BOSH_CIDR} 6)
 
+vault_static_ip_1=$(indexCidr ${BOSH_CIDR} 250)
+vault_static_ip_2=$(indexCidr ${BOSH_CIDR} 251)
+vault_static_ip_3=$(indexCidr ${BOSH_CIDR} 252)
+
 bosh_internal_gw=$(indexCidr ${bosh_CIDR} 1)
 
 
@@ -29,6 +33,7 @@ echo "internal_gw: ${internal_gw}" >> ${DIRECTOR_CONFIG}
 echo "internal_ip: ${internal_ip}" >> ${DIRECTOR_CONFIG}
 echo "subnet_id: ${BOSH_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
 echo "default_security_groups: [${SECURITY_GROUP}]" >> ${DIRECTOR_CONFIG}
+echo "vault_static_ips: [${vault_static_ip_1},${vault_static_ip_2},${vault_static_ip_3}]" >> ${DIRECTOR_CONFIG}
 echo "bosh_internal_cidr: ${bosh_CIDR}" >>${DIRECTOR_CONFIG}
 echo "bosh_internal_gw: ${bosh_internal_gw}" >>${DIRECTOR_CONFIG}
 echo "bosh_subnet_id: ${bosh_SUBNET_ID}" >> ${DIRECTOR_CONFIG}
