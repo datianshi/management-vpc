@@ -25,18 +25,15 @@ instance_groups:
   - name: atc
     release: concourse
     properties:
-      # replace with your CI's externally reachable URL, e.g. https://ci.foo.com
       external_url: https://((web_load_balancer))
-
-      # replace with username/password, or configure GitHub auth
       basic_auth_username: atc
-      basic_auth_password: atc
-
-      # replace with your SSL cert and key
-      # tls_cert: REPLACE_ME
-      # tls_key: REPLACE_ME
-
+      basic_auth_password: ((admin_password))
       postgresql_database: &atc_db atc
+      vault:
+        path_prefix: /concourse
+        url: ((vault_static_ip_1))  # e.g. http://192.168.10.15:8200
+        auth:
+          client_token: ((concourse_token))
   - name: tsa
     release: concourse
     properties: {}
@@ -58,7 +55,7 @@ instance_groups:
       - name: *atc_db
         # make up a role and password
         role: atc
-        password: atc
+        password: ((db_password))
 
 - name: worker
   instances: 2
@@ -87,3 +84,10 @@ update:
   serial: false
   canary_watch_time: 1000-60000
   update_watch_time: 1000-60000
+
+variables:
+variables:
+- name: admin_password
+  type: password
+- name: db_password
+  type: password
