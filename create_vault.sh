@@ -29,6 +29,8 @@ then
       VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault unseal ${key}
     done
     VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault mount -path=/concourse -description="Secrets for concourse pipelines" generic
+    ROOT_TOKEN=$(bosh-cli int ${BOSH_WORK_DIR}/vault_init_creds --path "/Initial Root Token")
+    vault auth -token-only - <<< "${ROOT_TOKEN}"
     vault policy-write policy-concourse - <<EOF
 path "concourse/*" {
   policy = "read"
