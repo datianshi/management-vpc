@@ -1,0 +1,46 @@
+azs:
+- name: z1
+  cloud_properties:
+    availability_zone: ((az))
+
+vm_types:
+- name: small
+  cloud_properties:
+    instance_type: m3.medium
+    ephemeral_disk: {size: 12_000}
+- name: medium
+  cloud_properties:
+    instance_type: m3.large
+    ephemeral_disk: {size: 12_000}
+- name: large
+  cloud_properties:
+    instance_type: m4.xlarge
+    ephemeral_disk: {size: 50_000}
+
+disk_types:
+- name: medium
+  disk_size: 3000
+- name: large
+  disk_size: 100_000
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: ((bosh_internal_cidr))
+    gateway: ((bosh_internal_gw))
+    azs: [z1]
+    dns: [8.8.8.8]
+    reserved: []
+    static: []
+    cloud_properties:
+      subnet: ((bosh_subnet_id))
+- name: vip
+  type: vip
+
+compilation:
+  workers: 5
+  reuse_compilation_vms: true
+  az: z1
+  vm_type: large
+  network: default

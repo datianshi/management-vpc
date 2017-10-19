@@ -1,0 +1,7 @@
+- type: replace
+  path: /vm_extensions?
+  value:
+  - name: web_load_balancer
+    cloud_properties:
+      elbs:
+      - ((web_load_balancer))

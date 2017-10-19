@@ -1,0 +1,4 @@
+- type: replace
+  path: /networks/name=default/subnets/range=((bosh_internal_cidr))/reserved
+  value:
+  - 10.0.1.1 - 10.0.1.10
