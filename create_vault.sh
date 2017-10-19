@@ -17,26 +17,28 @@ bosh-cli -n -e ${director_name} -d vault deploy vault/vault.yml --vars-file ./di
 
 export VAULT_IP=$(bosh-cli int ./director.yml --path /vault_static_ips/0)
 set +e
-VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault init -check
+export VAULT_ADDR=https://${VAULT_IP}:8200
+export VAULT_SKIP_VERIFY=true
+vault init -check
 if [ $? == 2 ]
 then
     set -e
     echo "Initialize Vault"
-    VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault init | head -n 6 > ${BOSH_WORK_DIR}/vault_init_creds
+    vault init | head -n 6 > ${BOSH_WORK_DIR}/vault_init_creds
     for n in {1..3}
     do
       key=$(bosh-cli int ${BOSH_WORK_DIR}/vault_init_creds --path "/Unseal Key ${n}")
-      VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault unseal ${key}
+      vault unseal ${key}
     done
-    VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault mount -path=/concourse -description="Secrets for concourse pipelines" generic
     ROOT_TOKEN=$(bosh-cli int ${BOSH_WORK_DIR}/vault_init_creds --path "/Initial Root Token")
-    vault auth -token-only - <<< "${ROOT_TOKEN}"
+    export VAULT_TOKEN=${ROOT_TOKEN}
+    vault mount -path=/concourse -description="Secrets for concourse pipelines" generic
     vault policy-write policy-concourse - <<EOF
 path "concourse/*" {
   policy = "read"
   capabilities =  ["read", "list"]
 }
 EOF
-    concourse_token=$(vault token-create --policy=policy-concourse -period="600h" -format=json | jq .token)
+    concourse_token=$(vault token-create --policy=policy-concourse -period="600h" -format=json | jq -r .auth.client_token)
     echo "concourse_token: ${concourse_token}" >> ${BOSH_WORK_DIR}/concourse_creds.yml
 fi
