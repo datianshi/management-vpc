@@ -18,7 +18,7 @@ bosh-cli -n -e ${director_name} -d vault deploy vault/vault.yml --vars-file ./di
 export VAULT_IP=$(bosh-cli int ./director.yml --path /vault_static_ips/0)
 set +e
 VAULT_ADDR=https://${VAULT_IP}:8200 VAULT_SKIP_VERIFY=true vault init -check
-if [ "$#" -eq 1 ]
+if [ $? == 2 ]
 then
     set -e
     echo "Initialize Vault"
