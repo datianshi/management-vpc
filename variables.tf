@@ -20,7 +20,7 @@ variable "nat_instance_type" {
 
 variable "vpc_cidr" {
     description = "CIDR for the whole VPC"
-    default = "192.168.0.0/23"
+    default = "10.0.0.0/16"
 }
 /*
   Availability Zone 1
@@ -28,14 +28,19 @@ variable "vpc_cidr" {
 
 variable "public_subnet_cidr_az1" {
     description = "CIDR for the Public Subnet 1"
-    default = "192.168.0.0/24"
+    default = "10.0.0.0/24"
 }
 
 variable private_subnet_cidr_az1 {
     description = "CIDR for the private subnet"
-    default = "192.168.1.0/24"
+    default = "10.0.1.0/24"
 }
 
 variable "nat_ip_az1" {
-    default = "192.168.0.6"
+    default = "10.0.0.6"
+}
+
+variable "infra_subnet_cidr_az1" {
+    description = "CIDR for the infrastructure"
+    default = "10.0.6.0/24"
 }
