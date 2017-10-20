@@ -80,32 +80,6 @@ resource "aws_security_group" "jumpbox" {
     }
 }
 
-resource "aws_security_group" "jumpbox2" {
-    name = "${var.environment}-pcf_jumpbox_sg2"
-    description = "Allow incoming connections for Jumpbox."
-    vpc_id = "${aws_vpc.PcfVpc.id}"
-    tags {
-        Name = "${var.environment}-JumpBox2"
-    }
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-}
 
 resource "aws_security_group" "directorSG" {
     name = "${var.environment}-pcf_director_sg"
@@ -192,26 +166,4 @@ resource "aws_security_group" "pcfSG" {
         protocol = -1
         cidr_blocks = ["0.0.0.0/0"]
     }
-}
-
-resource "aws_security_group" "rdsSG" {
-    name = "${var.environment}-pcf_rds_sg"
-    description = "Allow incoming connections for RDS."
-    vpc_id = "${aws_vpc.PcfVpc.id}"
-    tags {
-        Name = "${var.environment}-RDS Security Group"
-    }
-    ingress {
-        from_port = 3306
-        to_port = 3306
-        protocol = "tcp"
-        cidr_blocks = ["${var.vpc_cidr}"]
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
 }

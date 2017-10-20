@@ -5,4 +5,4 @@ apt-get install -y build-essential zlibc zlib1g-dev ruby ruby-dev openssl libxsl
 wget -O bosh-cli https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-2.0.16-linux-amd64
 chmod +x bosh-cli && mv bosh-cli /usr/local/bin
 wget -O terraform.zip https://releases.hashicorp.com/terraform/0.9.5/terraform_0.9.5_linux_amd64.zip?_ga=2.183333606.1130945761.1495122634-313454480.1491582161 && unzip terraform.zip && chmod +x terraform && mv terraform /usr/local/bin/
-#wget -O vault_0.8.3_linux_amd64.zip https://releases.hashicorp.com/vault/0.8.3/vault_0.8.3_linux_amd64.zip?_ga=2.219577241.1496311957.1508433908-1448421709.1497880409 && unzip vault_0.8.3_linux_amd64.zip && mv vault /usr/local/bin/
+wget -O vault_0.8.3_linux_amd64.zip https://releases.hashicorp.com/vault/0.8.3/vault_0.8.3_linux_amd64.zip?_ga=2.219577241.1496311957.1508433908-1448421709.1497880409 && unzip vault_0.8.3_linux_amd64.zip && mv vault /usr/local/bin/
