@@ -5,9 +5,9 @@ resource "aws_elb" "concourse" {
 
   listener {
     instance_port = 8080
-    instance_protocol = "HTTP"
+    instance_protocol = "TCP"
     lb_port = 443
-    lb_protocol = "HTTPS"
+    lb_protocol = "SSL"
     ssl_certificate_id = "${var.aws_cert_arn}"
   }
   health_check {
