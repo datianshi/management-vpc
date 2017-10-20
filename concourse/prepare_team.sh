@@ -20,8 +20,7 @@ wget --no-check-certificate -O fly "https://${ATC_URL}/api/v1/cli?arch=amd64&pla
 
 ./fly -t aws set-team --team-name ${PCF_ENV} \
     --basic-auth-username ${TEAM_USERNAME} \
-    --basic-auth-password ${TEAM_PASSWORD} \
-    --non-interactive
+    --basic-auth-password ${TEAM_PASSWORD} <<< "y"
 
 for n in db_master_password db_app_usage_service_password db_autoscale_password db_diego_password db_notifications_password db_routing_password db_uaa_password db_ccdb_password db_accountdb_password db_networkpolicyserverdb_password db_nfsvolumedb_password db_silk_password db_locket_password
   do
