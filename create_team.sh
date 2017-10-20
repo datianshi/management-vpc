@@ -2,7 +2,7 @@
 
 
 
-# PCF_ENV=test TEAM_USERNAME=test TEAM_PASSWORD=test OPSMAN_PASSWORD=admin ./concourse/prepare_team.sh
+# PCF_ENV=test TEAM_USERNAME=test TEAM_PASSWORD=test OPSMAN_PASSWORD=admin ./create_team.sh
 
 set -e
 
@@ -16,7 +16,7 @@ TEAM_USERNAME=${TEAM_USERNAME} \
 TEAM_PASSWORD=${TEAM_PASSWORD} \
 AWS_ACCESS_KEY=${TF_VAR_aws_access_key} \
 AWS_SECRET_KEY=${TF_VAR_aws_secret_key} \
-OPSMAN_PASSWORD=${OPSMAN_PASSWORD}
+OPSMAN_PASSWORD=${OPSMAN_PASSWORD} \
 'bash -es' <<ENDSSH
   cd management-vpc
   git pull origin master

@@ -3,7 +3,7 @@ set -e
 #Needs Pass PCF ENV, TEAM USERNAME, TEAM PASSWORD
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-TSTATE_FILE="${DIR}/terraform.tfstate"
+TSTATE_FILE="${DIR}/../terraform.tfstate"
 
 export VAULT_IP=$(bosh-cli int ./director.yml --path /vault_static_ips/0)
 export VAULT_ADDR=https://${VAULT_IP}:8200
