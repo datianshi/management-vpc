@@ -1,0 +1,176 @@
+pivnet_token: ((pivnet_token))
+git_private_key:
+
+opsman_major_minor_version: ^1\.12\..*$
+ert_major_minor_version: ^1\.12\..*$
+
+# Errands to disable prior to deploying ERT
+# Valid values:
+#   all
+#   none
+#   "" (empty string)
+#   Any combination of the following, separated by comma:
+#     smoke-tests
+#     push-apps-manager
+#     notifications
+#     notifications-ui
+#     push-pivotal-account
+#     autoscaling
+#     autoscaling-register-broker
+#     nfsbrokerpush
+ert_errands_to_disable: none
+
+# RDS Master Credentials
+db_master_username: bosh
+db_master_password: (( db_master_password ))
+# ERT Database Credentials
+db_app_usage_service_username: app_usage_service
+db_app_usage_service_password: (( db_app_usage_service_password ))
+db_autoscale_username: autoscale
+db_autoscale_password: (( db_autoscale_password ))
+db_diego_username: diego
+db_diego_password: (( db_diego_password ))
+db_notifications_username: notifications
+db_notifications_password: (( db_notifications_password ))
+db_routing_username: routing
+db_routing_password: ((db_routing_password))
+db_uaa_username: uaa
+db_uaa_password: ((db_uaa_password))
+db_ccdb_username: ccdb
+db_ccdb_password: ((db_ccdb_password))
+db_accountdb_username: accountdb
+db_accountdb_password: ((db_accountdb_password))
+db_networkpolicyserverdb_username: networkpolicyserverdb
+db_networkpolicyserverdb_password: ((db_networkpolicyserverdb_password))
+db_nfsvolumedb_username: nfsvolumedb
+db_nfsvolumedb_password: ((db_nfsvolumedb_password))
+db_silk_username: silk
+db_silk_password: ((db_silk_password))
+db_locket_username: locket
+db_locket_password: ((db_locket_password))
+
+# Prefix to use for Terraform-managed infrastructure, e.g. 'pcf-terraform'
+terraform_prefix: sding-pcf
+
+# Optional certificates to add to BOSH director
+director_certificates:
+
+# This key must be a key with admin access
+TF_VAR_aws_access_key: ((aws_access_key))
+TF_VAR_aws_secret_key: ((aws_secret_key))
+
+# ARN of the wildcard certificate to use; upload this in [AWS](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html#upload-server-certificate). This must be done prior to running the pipeline.
+TF_VAR_aws_cert_arn:
+
+# AMI to use for nat box
+TF_VAR_amis_nat: ami-0b707a72
+
+TF_VAR_aws_region: us-west-2
+TF_VAR_az1: us-west-2a
+TF_VAR_az2: us-west-2b
+TF_VAR_az3: us-west-2c
+
+# For terraform state file
+S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
+S3_OUTPUT_BUCKET: sding-terraform
+
+# The ERT domain to use; *.cfapps.<ert-domain> and *.sys.<ert-domain> will be used
+ERT_DOMAIN: *.test.shaozhenpcf.com
+
+# Route53 zone to add records to
+ROUTE_53_ZONE_ID:
+
+# Cert will be generated if left empty
+ERT_SSL_CERT:
+ERT_SSL_KEY:
+
+haproxy_forward_tls: enable # If enabled HAProxy will forward all requests to the router over TLS (enable|disable)
+haproxy_backend_ca:         # HAProxy will use the CA provided to verify the certificates provided by the router.
+
+routing_disable_http: false
+
+# An ordered, colon-delimited list of Golang supported TLS cipher suites in OpenSSL format.
+# Operators should verify that these are supported by any clients or downstream components that will initiate TLS handshakes with the Router/HAProxy.
+router_tls_ciphers: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384        # The recommended setting is "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
+haproxy_tls_ciphers: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384       # The recommended setting is "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
+
+# The domain to access Operations Manager; opsman.<ert-domain>
+opsman_domain_or_ip_address:
+
+# Operations Manager credentials
+OPSMAN_USER: admin
+OPSMAN_PASSWORD: ((opsman_password))
+
+# Key to use for Operations Manager, NAT VMs.
+PEM:
+# Upload PEM to AWS as the below key pair name
+TF_VAR_aws_key_name:
+
+# CIDRs to allow SSH access to Operations Manager from; configure PEM as well with the private key
+opsman_allow_ssh_cidr_ranges:
+
+# CIDRs to allow HTTPS access to Operations Manager from
+opsman_allow_https_cidr_ranges:
+
+# Email address for sending mysql monitor notifications
+mysql_monitor_recipient_email: sding@pivotal.io
+
+# Whether to enable MySQL backups. (disable|s3|scp)
+mysql_backups: disable
+
+# SCP backup config params (leave empty values if you're not using scp
+mysql_backups_scp_server:
+mysql_backups_scp_port:
+mysql_backups_scp_user:
+mysql_backups_scp_key:
+mysql_backups_scp_destination:
+mysql_backups_scp_cron_schedule:
+
+# S3 backup config params (leave empty values if you're not using s3)
+mysql_backups_s3_endpoint_url:
+mysql_backups_s3_bucket_name:
+mysql_backups_s3_bucket_path:
+mysql_backups_s3_access_key_id:
+mysql_backups_s3_secret_access_key:
+mysql_backups_s3_cron_schedule:
+
+# Subnets
+#   Pipeline uses six types of network: Public, Elastic Runtime, Services, Dynamic Services and RDS and Infrastructure networks
+#
+#   * Public Network: Ops manager and Nat boxes who needs public internet accessible through internet gateway
+#   * Elastic Runtime network: Cloud Foundry components, **three subnets on three AZs to achieve HA**
+#   * Services network: Deploy PCF tile services, **three subnets on three AZs to achieve HA**
+#   * Dynamic Services network: Deploy dynamic services, **three subnets on three AZs to achieve HA**
+#   * RDS network: Deploy RDS databases, **three subnets on three AZs to achieve HA**
+#   * Infrastructure network: Deploy Bosh director
+TF_VAR_vpc_cidr: 10.10.0.0/16
+TF_VAR_public_subnet_cidr_az1: 10.10.0.0/24
+TF_VAR_public_subnet_cidr_az2: 10.10.1.0/24
+TF_VAR_public_subnet_cidr_az3: 10.10.2.0/24
+TF_VAR_ert_subnet_cidr_az1: 10.10.16.0/20
+ert_subnet_reserved_ranges_z1: 10.10.16.0 - 10.10.16.10
+TF_VAR_ert_subnet_cidr_az2: 10.10.32.0/20
+ert_subnet_reserved_ranges_z2: 10.10.32.0 - 10.10.32.10
+TF_VAR_ert_subnet_cidr_az3: 10.10.48.0/20
+ert_subnet_reserved_ranges_z3: 10.10.48.0 - 10.10.48.10
+TF_VAR_services_subnet_cidr_az1: 10.10.64.0/20
+services_subnet_reserved_ranges_z1: 10.10.64.0 - 10.10.64.10
+TF_VAR_services_subnet_cidr_az2: 10.10.80.0/20
+services_subnet_reserved_ranges_z2: 10.10.80.0 - 10.10.80.10
+TF_VAR_services_subnet_cidr_az3: 10.10.96.0/20
+services_subnet_reserved_ranges_z3: 10.10.96.0 - 10.10.96.10
+TF_VAR_dynamic_services_subnet_cidr_az1: 10.10.112.0/22
+dynamic_services_subnet_reserved_ranges_z1: 10.10.112.0 - 10.10.112.10
+TF_VAR_dynamic_services_subnet_cidr_az2: 10.10.128.0/22
+dynamic_services_subnet_reserved_ranges_z2: 10.10.128.0 - 10.10.128.10
+TF_VAR_dynamic_services_subnet_cidr_az3: 10.10.144.0/22
+dynamic_services_subnet_reserved_ranges_z3: 10.10.144.0 - 10.10.144.10
+TF_VAR_infra_subnet_cidr_az1: 10.10.6.0/24
+infra_subnet_reserved_ranges_z1: 10.10.6.0 - 10.10.6.10
+TF_VAR_rds_subnet_cidr_az1: 10.10.3.0/24
+TF_VAR_rds_subnet_cidr_az2: 10.10.4.0/24
+TF_VAR_rds_subnet_cidr_az3: 10.10.5.0/24
+TF_VAR_opsman_ip_az1: 10.10.0.7
+TF_VAR_nat_ip_az1: 10.10.0.6
+TF_VAR_nat_ip_az2: 10.10.1.6
+TF_VAR_nat_ip_az3: 10.10.2.6
