@@ -73,9 +73,7 @@ TF_VAR_az3: us-west-2c
 # For terraform state file
 S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
 S3_OUTPUT_BUCKET: sding-terraform
-
-# The ERT domain to use; *.cfapps.<ert-domain> and *.sys.<ert-domain> will be used
-ERT_DOMAIN: *.test.shaozhenpcf.com
+ERT_DOMAIN: "*.test.shaozhenpcf.com"
 
 # Route53 zone to add records to
 ROUTE_53_ZONE_ID:
@@ -104,7 +102,7 @@ OPSMAN_PASSWORD: ((opsman_password))
 # Key to use for Operations Manager, NAT VMs.
 PEM:
 # Upload PEM to AWS as the below key pair name
-TF_VAR_aws_key_name:
+TF_VAR_aws_key_name: pcf-sding
 
 # CIDRs to allow SSH access to Operations Manager from; configure PEM as well with the private key
 opsman_allow_ssh_cidr_ranges:
