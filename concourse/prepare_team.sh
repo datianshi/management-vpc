@@ -9,6 +9,7 @@ export VAULT_IP=$(bosh-cli int ./director.yml --path /vault_static_ips/0)
 export VAULT_ADDR=https://${VAULT_IP}:8200
 export VAULT_SKIP_VERIFY=true
 export ATC_PASSWORD=$(bosh-cli int ${BOSH_WORK_DIR}/concourse_creds.yml --path /admin_password)
+export VAULT_TOKEN=$(bosh-cli int ${BOSH_WORK_DIR}/vault_init_creds --path "/Initial Root Token")
 
 ATC_URL=$(terraform state show -state ${TSTATE_FILE} aws_elb.concourse | grep dns_name | awk '{print $3}')
 ATC_TARGET="https://${ATC_URL}"
