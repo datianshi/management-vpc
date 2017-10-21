@@ -33,3 +33,4 @@ vault write concourse/${PCF_ENV}/pivnet_token value=${PIVNET_TOKEN}
 vault write concourse/${PCF_ENV}/aws_access_key value=${AWS_ACCESS_KEY}
 vault write concourse/${PCF_ENV}/aws_secret_key value=${AWS_SECRET_KEY}
 vault write concourse/${PCF_ENV}/opsman_password value=${OPSMAN_PASSWORD}
+vault write concourse/${PCF_ENV}/key_pem value=${KEY_PEM}

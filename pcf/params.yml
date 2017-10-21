@@ -22,16 +22,16 @@ ert_errands_to_disable: none
 
 # RDS Master Credentials
 db_master_username: bosh
-db_master_password: (( db_master_password ))
+db_master_password: ((db_master_password))
 # ERT Database Credentials
 db_app_usage_service_username: app_usage_service
-db_app_usage_service_password: (( db_app_usage_service_password ))
+db_app_usage_service_password: ((db_app_usage_service_password))
 db_autoscale_username: autoscale
-db_autoscale_password: (( db_autoscale_password ))
+db_autoscale_password: ((db_autoscale_password))
 db_diego_username: diego
-db_diego_password: (( db_diego_password ))
+db_diego_password: ((db_diego_password))
 db_notifications_username: notifications
-db_notifications_password: (( db_notifications_password ))
+db_notifications_password: ((db_notifications_password))
 db_routing_username: routing
 db_routing_password: ((db_routing_password))
 db_uaa_username: uaa
@@ -93,14 +93,14 @@ router_tls_ciphers: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384     
 haproxy_tls_ciphers: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384       # The recommended setting is "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
 
 # The domain to access Operations Manager; opsman.<ert-domain>
-opsman_domain_or_ip_address:
+opsman_domain_or_ip_address: opsman.test-pcf.shaozhenpcf.com
 
 # Operations Manager credentials
 OPSMAN_USER: admin
 OPSMAN_PASSWORD: ((opsman_password))
 
 # Key to use for Operations Manager, NAT VMs.
-PEM:
+PEM: ((key_pem))
 # Upload PEM to AWS as the below key pair name
 TF_VAR_aws_key_name: pcf-sding
 
