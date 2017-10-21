@@ -60,7 +60,7 @@ TF_VAR_aws_access_key: ((aws_access_key))
 TF_VAR_aws_secret_key: ((aws_secret_key))
 
 # ARN of the wildcard certificate to use; upload this in [AWS](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html#upload-server-certificate). This must be done prior to running the pipeline.
-TF_VAR_aws_cert_arn:
+TF_VAR_aws_cert_arn: arn:aws:iam::375783000519:server-certificate/sding-certificate
 
 # AMI to use for nat box
 TF_VAR_amis_nat: ami-0b707a72
@@ -73,10 +73,10 @@ TF_VAR_az3: us-west-2c
 # For terraform state file
 S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
 S3_OUTPUT_BUCKET: sding-terraform
-ERT_DOMAIN: "*.test.shaozhenpcf.com"
+ERT_DOMAIN: "*.test-pcf.shaozhenpcf.com"
 
 # Route53 zone to add records to
-ROUTE_53_ZONE_ID:
+ROUTE_53_ZONE_ID: Z28RYDWSA0ALH7
 
 # Cert will be generated if left empty
 ERT_SSL_CERT:

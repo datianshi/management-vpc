@@ -9,6 +9,7 @@ resources:
     endpoint: {{S3_ENDPOINT}}
     secret_access_key: {{TF_VAR_aws_secret_key}}
     versioned_file: terraform.tfstate
+    region_name: {{TF_VAR_aws_region}}
 - name: pivnet-elastic-runtime
   type: pivnet
   source:

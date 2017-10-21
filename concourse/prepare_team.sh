@@ -25,7 +25,7 @@ wget --no-check-certificate -O fly "https://${ATC_URL}/api/v1/cli?arch=amd64&pla
 
 for n in db_master_password db_app_usage_service_password db_autoscale_password db_diego_password db_notifications_password db_routing_password db_uaa_password db_ccdb_password db_accountdb_password db_networkpolicyserverdb_password db_nfsvolumedb_password db_silk_password db_locket_password
   do
-  pass=$(openssl rand -base64 20)
+  pass=$(openssl rand -hex 10)
   vault write concourse/${PCF_ENV}/${n} value=${pass}
 done
 
