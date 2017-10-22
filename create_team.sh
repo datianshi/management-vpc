@@ -19,7 +19,7 @@ TEAM_PASSWORD=${TEAM_PASSWORD} \
 AWS_ACCESS_KEY=${TF_VAR_aws_access_key} \
 AWS_SECRET_KEY=${TF_VAR_aws_secret_key} \
 OPSMAN_PASSWORD=${OPSMAN_PASSWORD} \
-"KEY_PEM=${KEY_PEM}" \
+KEY_PEM='"'${KEY_PEM}'"' \
 'bash -es' <<ENDSSH
   cd management-vpc
   git pull origin master
