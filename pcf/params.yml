@@ -73,7 +73,7 @@ TF_VAR_az3: us-west-2c
 # For terraform state file
 S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
 S3_OUTPUT_BUCKET: sding-terraform
-ERT_DOMAIN: "*.test-pcf.shaozhenpcf.com"
+ERT_DOMAIN: shaozhenpcf.com
 
 # Route53 zone to add records to
 ROUTE_53_ZONE_ID: Z28RYDWSA0ALH7
@@ -93,7 +93,7 @@ router_tls_ciphers: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384     
 haproxy_tls_ciphers: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384       # The recommended setting is "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
 
 # The domain to access Operations Manager; opsman.<ert-domain>
-opsman_domain_or_ip_address: opsman.test-pcf.shaozhenpcf.com
+opsman_domain_or_ip_address: opsman.shaozhenpcf.com
 
 # Operations Manager credentials
 OPSMAN_USER: admin
