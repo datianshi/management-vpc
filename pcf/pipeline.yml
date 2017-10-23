@@ -198,7 +198,7 @@ jobs:
   - task: peer-vpc
     file: management-vpc/vpc-peering/tasks/task.yml
     params:
-      AWS_ACCESS_KEY: {{TF_VAR_aws_key_name}}
+      AWS_ACCESS_KEY: {{TF_VAR_aws_access_key}}
       AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
       AWS_REGION: {{TF_VAR_aws_region}}
 - name: configure-director
@@ -515,6 +515,13 @@ jobs:
           - name: pcf-pipelines
             path: ""
     - get: terraform-state
+    - get: management-vpc
+  - task: clear-vpc-peering
+    file: management-vpc/vpc-peering/destroy/task.yml
+    params:
+      AWS_ACCESS_KEY: {{TF_VAR_aws_access_key}}
+      AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
+      AWS_REGION: {{TF_VAR_aws_region}}      
   - task: wipe
     file: pcf-pipelines/install-pcf/aws/tasks/wipe-env/task.yml
     params:
