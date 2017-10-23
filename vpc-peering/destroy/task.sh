@@ -13,8 +13,9 @@ REQUEST_TFSTATE="terraform-state/terraform.tfstate"
 REQUEST_VPC_ID=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.id')
 
 peering_id=$(aws ec2 describe-vpc-peering-connections --filters Name=requester-vpc-info.vpc-id,Values=${REQUEST_VPC_ID} | jq -r .VpcPeeringConnections[0].VpcPeeringConnectionId)
+STATUS=$(aws ec2 describe-vpc-peering-connections --filters Name=requester-vpc-info.vpc-id,Values=${REQUEST_VPC_ID} | jq -r .VpcPeeringConnections[0].Status.Code)
 
-if [ "${peering_id}X" != "X" ]
+if [[ ("${peering_id}X" != "X") && ("${STATUS}" != "deleted") ]]
 then
   aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id=${peering_id}
   peer_route_table=$(cat ${PEERING_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.PrivateSubnetRouteTable_az1"].primary.attributes.id')
