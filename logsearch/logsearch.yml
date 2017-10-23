@@ -1,0 +1,471 @@
+name: logsearch
+releases:
+- name: logsearch
+  version: latest
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+instance_groups:
+jobs:
+- instances: 1
+  name: elasticsearch_master
+  networks:
+  - name: default
+    static_ips:
+    - 192.168.1.96
+  persistent_disk_pool: large
+  properties:
+    cerebro:
+      secret: secret
+    elasticsearch:
+      node:
+        allow_data: false
+        allow_master: true
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stdout.log
+        service: elasticsearch
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stderr.log
+        service: elasticsearch
+  resource_pool: elasticsearch_master
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: cerebro
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+  update:
+    max_in_flight: 1
+- instances: 1
+  name: cluster_monitor
+  networks:
+  - name: default
+    static_ips:
+    - 192.168.1.98
+  persistent_disk_pool: cluster_monitor
+  properties:
+    curator:
+      elasticsearch:
+        host: 127.0.0.1
+        port: 9200
+      purge_logs:
+        retention_period: 7
+    elasticsearch:
+      cluster_name: monitor
+      master_hosts:
+      - 127.0.0.1
+      node:
+        allow_data: true
+        allow_master: true
+    elasticsearch_config:
+      elasticsearch:
+        host: 127.0.0.1
+        port: 9200
+      index_prefix: logstash-
+      templates:
+      - shards-and-replicas: '{ "template" : "logstash-*", "order" : 100, "settings"
+          : { "number_of_shards" : 1, "number_of_replicas" : 0 } }'
+      - index-settings: /var/vcap/jobs/elasticsearch_config/index-templates/index-settings.json
+      - index-mappings: /var/vcap/jobs/elasticsearch_config/index-templates/index-mappings.json
+    kibana:
+      elasticsearch:
+        host: 127.0.0.1
+        port: 9200
+      memory_limit: 30
+      port: 5601
+      wait_for_templates:
+      - shards-and-replicas
+    logstash_ingestor:
+      syslog:
+        port: 5514
+    logstash_parser:
+      filters:
+      - monitor: /var/vcap/packages/logsearch-config/logstash-filters-monitor.conf
+      logstash_parser.elasticsearch.index: logstash-%{+YYYY.MM.dd}
+    nats_to_syslog:
+      debug: true
+    redis:
+      host: 127.0.0.1
+      maxmemory: 10
+  resource_pool: cluster_monitor
+  templates:
+  - name: ingestor_syslog
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch_config
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: curator
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: kibana
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: nats_to_syslog
+    release: logsearch
+- instances: 1
+  name: maintenance
+  networks:
+  - name: default
+  properties:
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/curator/curator.log
+        service: curator
+      - file: /var/vcap/sys/log/elasticsearch_config/job.control.log
+        service: elasticsearch_config
+  resource_pool: maintenance
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch_config
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: curator
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+  update:
+    serial: true
+- instances: 2
+  name: elasticsearch_data
+  networks:
+  - name: default
+  persistent_disk_pool: elasticsearch_data
+  properties:
+    elasticsearch:
+      node:
+        allow_data: true
+        allow_master: false
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stdout.log
+        service: elasticsearch
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stderr.log
+        service: elasticsearch
+  resource_pool: elasticsearch_data
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+  update:
+    max_in_flight: 1
+    serial: true
+- instances: 1
+  name: kibana
+  networks:
+  - name: default
+    static_ips:
+    - 192.168.1.101
+  properties:
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/kibana/kibana.stdout.log
+        service: kibana
+      - file: /var/vcap/sys/log/kibana/kibana.stderr.log
+        service: kibana
+  resource_pool: kibana
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: kibana
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch
+    release: logsearch
+- instances: 1
+  name: ingestor
+  networks:
+  - name: default
+    static_ips:
+    - 192.168.1.97
+  persistent_disk_pool: ingestor
+  properties:
+    logstash_ingestor:
+      debug: false
+      relp:
+        port: null
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stdout.log
+        service: elasticsearch
+      - file: /var/vcap/sys/log/elasticsearch/elasticsearch.stderr.log
+        service: elasticsearch
+      - file: /var/vcap/sys/log/ingestor_syslog/ingestor_syslog.stdout.log
+        service: ingestor_syslog
+      - file: /var/vcap/sys/log/ingestor_syslog/ingestor_syslog.stderr.log
+        service: ingestor_syslog
+  resource_pool: ingestor
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: elasticsearch
+    release: logsearch
+  - name: ingestor_syslog
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+- instances: 1
+  name: ingestor-bosh-nats
+  networks:
+  - name: default
+    static_ips:
+    - 192.168.1.100
+  properties:
+    logstash_ingestor:
+      syslog:
+        port: 5514
+    syslog_forwarder:
+      config:
+      - file: /var/vcap/sys/log/nats_to_syslog/nats_to_syslog.stdout.log
+        service: nats_to_syslog
+      - file: /var/vcap/sys/log/nats_to_syslog/nats_to_syslog.stderr.log
+        service: nats_to_syslog
+  resource_pool: ingestor
+  templates:
+  - name: ingestor_syslog
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: nats_to_syslog
+    release: logsearch
+  - consumes:
+      syslog_forwarder: nil
+    name: syslog_forwarder
+    release: logsearch
+- instances: 1
+  name: ls-router
+  networks:
+  - default:
+    - gateway
+    - dns
+    name: default
+    static_ips:
+    - 192.168.1.105
+  properties:
+    haproxy:
+      cluster_monitor:
+        backend_servers:
+        - 192.168.1.98
+      ingestor:
+        backend_servers:
+        - 192.168.1.97
+      kibana:
+        backend_servers:
+        - 192.168.1.101
+      syslog_server: 192.168.1.98
+  resource_pool: haproxy
+  templates:
+  - consumes:
+      elasticsearch: nil
+      ingestor: nil
+      kibana: nil
+      syslog_forwarder: nil
+    name: haproxy
+    release: logsearch
+- consumes:
+    elasticsearch: nil
+  instances: 1
+  lifecycle: errand
+  name: smoke-tests
+  networks:
+  - name: default
+  properties:
+    smoke_tests:
+      elasticsearch_master:
+        host: 192.168.1.96
+      syslog_ingestor:
+        host: 192.168.1.105
+        port: 5514
+  release: logsearch
+  resource_pool: errand
+  templates:
+  - consumes:
+      elasticsearch: nil
+    name: smoke-tests
+    release: logsearch
+
+networks:
+- name: default
+  subnets:
+  - cloud_properties:
+      security_groups:
+      - bosh
+      - logsearch
+      subnet: VAR_CF1_SUBNET
+    dns:
+    - VAR_CF1_DNS_1
+    - VAR_CF1_DNS_2
+    gateway: VAR_CF1_NET_GW
+    range: VAR_CF1_NET_RANGE
+    reserved:
+    - 192.168.1.2 - 192.168.1.95
+    static:
+    - 192.168.1.96 - 192.168.1.120
+  type: manual
+properties:
+  curator:
+    elasticsearch:
+      hosts:
+      - 192.168.1.96
+      port: 9200
+    purge_logs:
+      retention_period: 30
+      unit: days
+  elasticsearch:
+    cluster_name: logsearch
+    exec: null
+    master_hosts:
+    - 192.168.1.96
+  elasticsearch_config:
+    elasticsearch:
+      host: 192.168.1.96
+    templates:
+    - shards-and-replicas: /var/vcap/jobs/elasticsearch_config/index-templates/shards-and-replicas.json
+    - index-settings: /var/vcap/jobs/elasticsearch_config/index-templates/index-settings.json
+    - index-mappings: /var/vcap/jobs/elasticsearch_config/index-templates/index-mappings.json
+  logstash_ingestor:
+    debug: false
+  logstash_parser:
+    debug: false
+  nats_to_syslog:
+    nats:
+      machines:
+      - VAR_NATS_IP
+      password: VAR_NATS_PASS
+      port: 4222
+      subject: '>'
+      user: VAR_NATS_USER
+    syslog:
+      host: 127.0.0.1
+      port: 5514
+  syslog_forwarder:
+    host: 192.168.1.98
+    port: 5514
+resource_pools:
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: elasticsearch_master
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: m3.medium
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: elasticsearch_data
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: ingestor
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: kibana
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: maintenance
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: m4.large
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: cluster_monitor
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: haproxy
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-west-2c
+    instance_type: t2.micro
+  env:
+    bosh:
+      password: $6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0
+  name: errand
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+update:
+  canaries: 1
+  canary_watch_time: 30000-600000
+  max_errors: 1
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-600000
