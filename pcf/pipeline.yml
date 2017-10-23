@@ -196,7 +196,7 @@ jobs:
     - get: peering-terraform-state
     - get: management-vpc
   - task: peer-vpc
-    file: management-vpc/vpc-peering/tasks.yml
+    file: management-vpc/vpc-peering/tasks/tasks.yml
     params:
       AWS_ACCESS_KEY: {{TF_VAR_aws_key_name}}
       AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
@@ -229,7 +229,7 @@ jobs:
             path: ""
     - get: terraform-state
       passed:
-      - create-infrastructure
+      - peer-management-vpc
       trigger: false
   - task: prepare-rds
     file: pcf-pipelines/install-pcf/aws/tasks/prepare-rds/task.yml
