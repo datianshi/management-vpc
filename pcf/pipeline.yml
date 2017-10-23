@@ -196,7 +196,7 @@ jobs:
     - get: peering-terraform-state
     - get: management-vpc
   - task: peer-vpc
-    file: management-vpc/vpc-peering/tasks/tasks.yml
+    file: management-vpc/vpc-peering/tasks/task.yml
     params:
       AWS_ACCESS_KEY: {{TF_VAR_aws_key_name}}
       AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}

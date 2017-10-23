@@ -14,4 +14,4 @@ params:
   AWS_SECRET_KEY:
   AWS_REGION:
 run:
-  path: management-vpc/vpc-peering/tasks/tasks.sh
+  path: management-vpc/vpc-peering/tasks/task.sh
