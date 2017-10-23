@@ -82,7 +82,7 @@ ROUTE_53_ZONE_ID: Z28RYDWSA0ALH7
 ERT_SSL_CERT:
 ERT_SSL_KEY:
 
-haproxy_forward_tls: enable # If enabled HAProxy will forward all requests to the router over TLS (enable|disable)
+haproxy_forward_tls: disable # If enabled HAProxy will forward all requests to the router over TLS (enable|disable)
 haproxy_backend_ca:         # HAProxy will use the CA provided to verify the certificates provided by the router.
 
 routing_disable_http: false

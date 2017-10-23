@@ -10,6 +10,16 @@ resources:
     secret_access_key: {{TF_VAR_aws_secret_key}}
     versioned_file: terraform.tfstate
     region_name: {{TF_VAR_aws_region}}
+- name: peering-terraform-state
+  type: s3
+  source:
+    access_key_id: {{TF_VAR_aws_access_key}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
+    secret_access_key: {{TF_VAR_aws_secret_key}}
+    versioned_file: peering-terraform.tfstate
+    region_name: {{TF_VAR_aws_region}}
 - name: pivnet-elastic-runtime
   type: pivnet
   source:
@@ -30,6 +40,11 @@ resources:
     product_slug: ops-manager
     product_version: {{opsman_major_minor_version}}
     sort_by: semver
+- name: management-vpc
+  type: git
+  source:
+    uri: https://github.com/datianshi/management-vpc
+    branch: master
 resource_types:
 - name: pivnet
   type: docker-image
@@ -169,6 +184,23 @@ jobs:
       put: terraform-state
       params:
         file: terraform-state-output/terraform.tfstate
+- name: peer-management-vpc
+  serial_groups:
+  - opsman
+  plan:
+  - aggregate:
+    - get: terraform-state
+      passed:
+      - create-infrastructure
+      trigger: false
+    - get: peering-terraform-state
+    - get: management-vpc
+  - task: peer-vpc
+    file: management-vpc/vpc-peering/tasks.yml
+    params:
+      AWS_ACCESS_KEY: {{TF_VAR_aws_key_name}}
+      AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
+      AWS_REGION: {{TF_VAR_aws_region}}
 - name: configure-director
   serial_groups:
   - opsman
@@ -227,7 +259,7 @@ jobs:
       DB_UAA_PASSWORD: {{db_uaa_password}}
       DB_UAA_USERNAME: {{db_uaa_username}}
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      PEM: {{PEM}}      
+      PEM: {{PEM}}
   - task: config-opsman-auth
     file: pcf-pipelines/tasks/config-opsman/task.yml
     params:

@@ -9,7 +9,6 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TSTATE_FILE="${DIR}/terraform.tfstate"
 source "${DIR}/env.sh"
-echo "${TF_VAR_aws_access_key}"
 
 JUMPBOX_IP=$(terraform state show -state ${TSTATE_FILE} aws_instance.jumpbox | grep public_ip | tail -n 1 | awk '{print $3}')
 ssh -tt -o "StrictHostKeyChecking=no" -i ${PRIVATE_KEY_PATH} ubuntu@${JUMPBOX_IP} PIVNET_TOKEN=${PIVNET_TOKEN} \

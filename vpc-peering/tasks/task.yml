@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/cflinuxfs2
+inputs:
+  - name: peering-terraform-state
+  - name: terraform-state
+  - name: management-vpc
+params:
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:
+  AWS_REGION:
+run:
+  path: management-vpc/vpc-peering/tasks.sh
