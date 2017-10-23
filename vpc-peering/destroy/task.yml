@@ -6,6 +6,7 @@ image_resource:
   source:
     repository: czero/cflinuxfs2
 inputs:
+  - name: peering-terraform-state
   - name: terraform-state
   - name: management-vpc
 params:
