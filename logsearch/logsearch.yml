@@ -10,6 +10,7 @@ instance_groups:
 - name: elasticsearch_master
   instances: 1
   vm_type: medium
+  stemcell: trusty
   azs: [z1]
   networks:
   - name: default
@@ -19,56 +20,107 @@ instance_groups:
     consumes:
       elasticsearch: nil
     provides:
-      elasticsearch:
-        elasticsearch: {as: elasticsearch_master}
+      elasticsearch: {as: elasticsearch_master}
     release: logsearch
   - name: cerebro
     consumes:
       elasticsearch: {from: elasticsearch_master}
     release: logsearch
-- name: cluster_monitor
-  instances: 1
-  vm_type: medium
-  stemcell: trusty
-  azs: [z1]
-  networks:
-  - name: default
-  persistent_disk_type: medium
-  jobs:
-  - name: ingestor_syslog
-    release: logsearch
-  - name: elasticsearch
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
-  - name: elasticsearch_config
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
-  - name: curator
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
-  - name: kibana
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
-- name: maintenance
-  instances: 1
-  vm_type: medium
-  stemcell: trusty
-  azs: [z1]
-  networks:
-  - name: default
-  jobs:
-  - name: elasticsearch_config
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
-  - name: curator
-    consumes:
-      elasticsearch: {from: elasticsearch_master}
-    release: logsearch
+  properties:
+      elasticsearch:
+        node:
+          allow_master: true
+          allow_data: false
+      cerebro:
+        secret: secret
+      syslog_forwarder:
+        config:
+        - {service: elasticsearch, file: /var/vcap/sys/log/elasticsearch/elasticsearch.stdout.log}
+        - {service: elasticsearch, file: /var/vcap/sys/log/elasticsearch/elasticsearch.stderr.log}
+# - name: cluster_monitor
+#   instances: 1
+#   vm_type: medium
+#   stemcell: trusty
+#   azs: [z1]
+#   networks:
+#   - name: default
+#   persistent_disk_type: medium
+#   jobs:
+#   - name: ingestor_syslog
+#     release: logsearch
+#   - name: elasticsearch
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
+#   - name: elasticsearch_config
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
+#   - name: curator
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
+#   - name: kibana
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
+#   properties:
+#     kibana:
+#       port: 5601
+#       elasticsearch:
+#         host: 127.0.0.1
+#         port: 9200
+#       memory_limit: 30
+#       wait_for_templates: [shards-and-replicas]
+#     elasticsearch:
+#       master_hosts: [127.0.0.1]
+#       cluster_name: monitor
+#       node:
+#         allow_master: true
+#         allow_data: true
+#     redis:
+#       host: 127.0.0.1
+#       maxmemory: 10
+#     curator:
+#       elasticsearch:
+#         host: 127.0.0.1
+#         port: 9200
+#       purge_logs:
+#         retention_period: 7
+#     elasticsearch_config:
+#       elasticsearch:
+#         host: 127.0.0.1
+#         port: 9200
+#       index_prefix: "logstash-"
+#       templates:
+#         - shards-and-replicas: "{ \"template\" : \"logstash-*\", \"order\" : 100, \"settings\" : { \"number_of_shards\" : 1, \"number_of_replicas\" : 0 } }"
+#         - index-settings: /var/vcap/jobs/elasticsearch_config/index-templates/index-settings.json
+#         - index-mappings: /var/vcap/jobs/elasticsearch_config/index-templates/index-mappings.json
+#     logstash_parser:
+#       logstash_parser.elasticsearch.index: "logstash-%{+YYYY.MM.dd}"
+#       filters:
+#       - monitor: /var/vcap/packages/logsearch-config/logstash-filters-monitor.conf
+#     nats_to_syslog:
+#       debug: true
+#     logstash_ingestor:
+#       syslog:
+#         port: 5514
+# - name: maintenance
+#   instances: 1
+#   vm_type: medium
+#   stemcell: trusty
+#   azs: [z1]
+#   networks:
+#   - name: default
+#   jobs:
+#   - name: elasticsearch_config
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
+#   - name: curator
+#     consumes:
+#       elasticsearch: {from: elasticsearch_master}
+#     release: logsearch
 - name: elasticsearch_data
   instances: 2
   vm_type: large
@@ -125,91 +177,9 @@ instance_groups:
   properties:
     logstash_ingestor:
       debug: false
-# - instances: 1
-#   name: ingestor-bosh-nats
-#   vm_type: medium
-#   stemcell: trusty
-#   azs: [z1]
-#   networks:
-#   - name: default
-#     static_ips:
-#     - 192.168.1.100
-#   properties:
-#     logstash_ingestor:
-#       syslog:
-#         port: 5514
-#     syslog_forwarder:
-#       config:
-#       - file: /var/vcap/sys/log/nats_to_syslog/nats_to_syslog.stdout.log
-#         service: nats_to_syslog
-#       - file: /var/vcap/sys/log/nats_to_syslog/nats_to_syslog.stderr.log
-#         service: nats_to_syslog
-#   resource_pool: ingestor
-#   templates:
-#   - name: ingestor_syslog
-#     release: logsearch
-#   - consumes:
-#       syslog_forwarder: nil
-#     name: nats_to_syslog
-#     release: logsearch
-#   - consumes:
-#       syslog_forwarder: nil
-#     name: syslog_forwarder
-#     release: logsearch
-# - instances: 1
-#   name: ls-router
-#   networks:
-#   - default:
-#     - gateway
-#     - dns
-#     name: default
-#     static_ips:
-#     - 192.168.1.105
-#   properties:
-#     haproxy:
-#       cluster_monitor:
-#         backend_servers:
-#         - 192.168.1.98
-#       ingestor:
-#         backend_servers:
-#         - 192.168.1.97
-#       kibana:
-#         backend_servers:
-#         - 192.168.1.101
-#       syslog_server: 192.168.1.98
-#   resource_pool: haproxy
-#   templates:
-#   - consumes:
-#       elasticsearch: nil
-#       ingestor: nil
-#       kibana: nil
-#       syslog_forwarder: nil
-#     name: haproxy
-#     release: logsearch
-# - consumes:
-#     elasticsearch: nil
-#   instances: 1
-#   lifecycle: errand
-#   name: smoke-tests
-#   networks:
-#   - name: default
-#   properties:
-#     smoke_tests:
-#       elasticsearch_master:
-#         host: 192.168.1.96
-#       syslog_ingestor:
-#         host: 192.168.1.105
-#         port: 5514
-#   release: logsearch
-#   resource_pool: errand
-#   templates:
-#   - consumes:
-#       elasticsearch: nil
-#     name: smoke-tests
-#     release: logsearch
 
 properties:
-  curator: {}
+  curator:
     purge_logs:
       retention_period: 30
       unit: days
