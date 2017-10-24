@@ -44,6 +44,28 @@ resource "aws_security_group" "concourse" {
     }
 }
 
+
+resource "aws_security_group" "kibana" {
+    name = "${var.environment}-kibana"
+    description = "Allow incoming connections for kibana"
+    vpc_id = "${aws_vpc.PcfVpc.id}"
+    tags {
+        Name = "${var.environment}-kibana"
+    }
+    ingress {
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
 /*
   Jumpbox Security group
 */

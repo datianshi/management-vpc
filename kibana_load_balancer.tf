@@ -1,23 +1,23 @@
-resource "aws_elb" "kibana" {
-  name = "kibana"
+resource "aws_elb" "concourse" {
+  name = "concourse"
   subnets = ["${aws_subnet.PcfVpcPublicSubnet_az1.id}"]
-  security_groups = ["${aws_security_group.kibana.id}"]
+  security_groups = ["${aws_security_group.concourse.id}"]
 
   listener {
-    instance_port = 5601
+    instance_port = 8080
     instance_protocol = "TCP"
     lb_port = 443
     lb_protocol = "SSL"
     ssl_certificate_id = "${var.aws_cert_arn}"
   }
   health_check {
-    target = "TCP:5601"
+    target = "TCP:8080"
     timeout = 5
     interval = 30
     unhealthy_threshold = 2
     healthy_threshold = 10
   }
   tags {
-    Name = "${var.environment}-kibana-Elb"
+    Name = "${var.environment}-concourse-Elb"
   }
 }

@@ -18,7 +18,7 @@ instance_groups:
   jobs:
   - name: elasticsearch
     consumes:
-      elasticsearch: nil
+      elasticsearch: {from: elasticsearch_master}
     provides:
       elasticsearch: {as: elasticsearch_master}
     release: logsearch
@@ -142,6 +142,8 @@ instance_groups:
 - name: kibana
   instances: 1
   vm_type: medium
+  vm_extensions:
+  - kibana_load_balancer
   stemcell: trusty
   azs: [z1]
   networks:

@@ -11,6 +11,7 @@ bosh_CIDR=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateS
 bosh_SUBNET_ID=$(terraform state show -state ${TSTATE_FILE} aws_subnet.PcfVpcPrivateSubnet_az1 | grep id | head -n 1 | awk '{print $3}')
 
 WEB_LOAD_BALANCER=$(terraform state show -state ${TSTATE_FILE} aws_elb.concourse | grep name | tail -n 1 | awk '{print $3}')
+KIBANA_LOAD_BALANCER=$(terraform state show -state ${TSTATE_FILE} aws_elb.kibana | grep name | tail -n 1 | awk '{print $3}')
 
 function indexCidr() {
   INDEX=$(echo ${1} | sed "s/\(.*\)\.\(.*\)\.\(.*\)\..*/\1.\2.\3.${2}/g")
@@ -44,4 +45,5 @@ echo "access_key_id": ${TF_VAR_aws_access_key} >> ${DIRECTOR_CONFIG}
 echo "secret_access_key": ${TF_VAR_aws_secret_key} >> ${DIRECTOR_CONFIG}
 echo "default_key_name": ${TF_VAR_aws_key_name} >> ${DIRECTOR_CONFIG}
 echo "web_load_balancer": ${WEB_LOAD_BALANCER} >> ${DIRECTOR_CONFIG}
+echo "kibana_load_balancer": ${KIBANA_LOAD_BALANCER} >> ${DIRECTOR_CONFIG}
 echo "private_key": "${DIR}/$(basename $PRIVATE_KEY_PATH)" >> ${DIRECTOR_CONFIG}

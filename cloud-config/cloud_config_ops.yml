@@ -5,3 +5,7 @@
     cloud_properties:
       elbs:
       - ((web_load_balancer))
+  - name: kibana_load_balancer
+    cloud_properties:
+      elbs:
+      - ((kibana_load_balancer))
