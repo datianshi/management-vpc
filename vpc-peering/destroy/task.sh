@@ -20,11 +20,11 @@ then
   aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id=${peering_id}
   peer_route_table=$(cat ${PEERING_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.PrivateSubnetRouteTable_az1"].primary.attributes.id')
   request_route_table=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.PublicSubnetRouteTable"].primary.attributes.id')
-  request_private_route_table_az1=$(cat request.tfstate | jq -r '.modules[0].resources["aws_route_table.PrivateSubnetRouteTable_az1"].primary.attributes.id')
-  request_private_route_table_az2=$(cat request.tfstate | jq -r '.modules[0].resources["aws_route_table.SubnetRouteTable_az2"].primary.attributes.id')
-  request_private_route_table_az3=$(cat request.tfstate | jq -r '.modules[0].resources["aws_route_table.SubnetRouteTable_az3"].primary.attributes.id')
-  peering_subnet_cidr=$(cat peering.tfstate | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.attributes.cidr_block')
-  request_subnet_cidr=$(cat request.tfstate | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.attributes.cidr_block')
+  request_private_route_table_az1=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.PrivateSubnetRouteTable_az1"].primary.attributes.id')
+  request_private_route_table_az2=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.SubnetRouteTable_az2"].primary.attributes.id')
+  request_private_route_table_az3=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_route_table.SubnetRouteTable_az3"].primary.attributes.id')
+  peering_subnet_cidr=$(cat ${PEERING_TFSTATE} | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.attributes.cidr_block')
+  request_subnet_cidr=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.attributes.cidr_block')
   request_director_group_id=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_security_group.directorSG"].primary.attributes.id')
   request_vm_group_id=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_security_group.pcfSG"].primary.attributes.id')
 

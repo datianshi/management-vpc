@@ -376,7 +376,7 @@ jobs:
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
       OPSMAN_USERNAME: {{OPSMAN_USER}}
       PRODUCT_NAME: cf
-- name: deploy-ert
+- name: configure-ert
   serial_groups:
   - opsman
   plan:
@@ -482,6 +482,36 @@ jobs:
       pcf_iaas: aws
       routing_disable_http: {{routing_disable_http}}
       terraform_prefix: {{terraform_prefix}}
+- name: deploy-ert
+  serial_groups:
+  - opsman
+  plan:
+  - aggregate:
+    - do:
+      - get: pcf-pipelines-tarball
+      - task: unpack-tarball
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: czero/cflinuxfs2
+          run:
+            path: bash
+            args:
+            - -c
+            - tar -xvf pcf-pipelines-tarball/*.tgz
+            dir: ""
+          inputs:
+          - name: pcf-pipelines-tarball
+            path: ""
+          outputs:
+          - name: pcf-pipelines
+            path: ""
+    - get: terraform-state
+      passed:
+      - configure-ert
+      trigger: true
   - task: disable-errands
     file: pcf-pipelines/tasks/disable-errands/task.yml
     params:
