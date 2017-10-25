@@ -172,3 +172,7 @@ TF_VAR_opsman_ip_az1: 10.10.0.7
 TF_VAR_nat_ip_az1: 10.10.0.6
 TF_VAR_nat_ip_az2: 10.10.1.6
 TF_VAR_nat_ip_az3: 10.10.2.6
+
+syslog_host: 192.168.1.21
+syslog_port: 5514
+syslog_protocol: TCP

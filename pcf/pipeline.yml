@@ -32,7 +32,7 @@ resources:
   source:
     api_token: {{pivnet_token}}
     product_slug: pcf-automation
-    product_version: v0.19.0
+    product_version: v0.18.0
 - name: pivnet-opsmgr
   type: pivnet
   source:
@@ -409,6 +409,14 @@ jobs:
   - task: configure-ert
     file: pcf-pipelines/tasks/configure-ert/task.yml
     params:
+      HA_PROXY_INSTANCES: 0
+      MYSQL_PROXY_INSTANCES: 0
+      MYSQL_INSTANCES: 0
+      BACKUP_PREPARE_INSTANCES: 0
+      NFS_SERVER_INSTANCES: 0
+      SYSLOG_HOST: ((syslog_host))
+      SYSLOG_PORT: ((syslog_port))
+      SYSLOG_PROTOCOL: ((syslog_protocol))
       HAPROXY_BACKEND_CA: {{haproxy_backend_ca}}
       HAPROXY_FORWARD_TLS: {{haproxy_forward_tls}}
       HAPROXY_TLS_CIPHERS: {{haproxy_tls_ciphers}}
@@ -517,13 +525,19 @@ jobs:
     - get: terraform-state
     - get: management-vpc
     - get: peering-terraform-state
+  - task: wipe-opsman
+    file: management-vpc/pcf/wipe-env/tasks/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_USERNAME: {{OPSMAN_USER}}
   - task: clear-vpc-peering
     file: management-vpc/vpc-peering/destroy/task.yml
     params:
       AWS_ACCESS_KEY: {{TF_VAR_aws_access_key}}
       AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
       AWS_REGION: {{TF_VAR_aws_region}}
-  - task: wipe
+  - task: wipe-terraform
     file: pcf-pipelines/install-pcf/aws/tasks/wipe-env/task.yml
     params:
       AWS_ACCESS_KEY_ID: {{TF_VAR_aws_access_key}}

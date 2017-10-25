@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/cflinuxfs2
+inputs:
+  - name: management-vpc
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
+run:
+  path: management-vpc/pcf/wipe-env/tasks/task.sh
