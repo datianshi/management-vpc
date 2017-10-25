@@ -9,6 +9,7 @@ export BOSH_CLIENT_SECRET=$(bosh-cli int ${BOSH_WORK_DIR}/creds.yml --path /admi
 
 bosh-cli -n -e ${director_name} -d vault delete-deployment
 bosh-cli -n -e ${director_name} -d concourse delete-deployment
+bosh-cli -n -e ${director_name} -d logsearch delete-deployment
 bosh-cli -n -e ${director_name} clean-up --all
 
 bosh-cli -n delete-env bosh-deployment/bosh.yml \

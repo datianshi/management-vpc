@@ -525,18 +525,18 @@ jobs:
     - get: terraform-state
     - get: management-vpc
     - get: peering-terraform-state
-  - task: wipe-opsman
-    file: management-vpc/pcf/wipe-env/tasks/task.yml
-    params:
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
-      OPSMAN_USERNAME: {{OPSMAN_USER}}
-  - task: clear-vpc-peering
-    file: management-vpc/vpc-peering/destroy/task.yml
-    params:
-      AWS_ACCESS_KEY: {{TF_VAR_aws_access_key}}
-      AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
-      AWS_REGION: {{TF_VAR_aws_region}}
+  # - task: wipe-opsman
+  #   file: management-vpc/pcf/wipe-env/tasks/task.yml
+  #   params:
+  #     OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+  #     OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+  #     OPSMAN_USERNAME: {{OPSMAN_USER}}
+  # - task: clear-vpc-peering
+  #   file: management-vpc/vpc-peering/destroy/task.yml
+  #   params:
+  #     AWS_ACCESS_KEY: {{TF_VAR_aws_access_key}}
+  #     AWS_SECRET_KEY: {{TF_VAR_aws_secret_key}}
+  #     AWS_REGION: {{TF_VAR_aws_region}}
   - task: wipe-terraform
     file: pcf-pipelines/install-pcf/aws/tasks/wipe-env/task.yml
     params:
