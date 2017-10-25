@@ -511,7 +511,7 @@ jobs:
     - get: terraform-state
       passed:
       - configure-ert
-      trigger: true
+      trigger: false
   - task: disable-errands
     file: pcf-pipelines/tasks/disable-errands/task.yml
     params:

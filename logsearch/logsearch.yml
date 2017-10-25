@@ -163,7 +163,7 @@ instance_groups:
     release: logsearch
 - name: ingestor
   instances: 1
-  vm_type: medium
+  vm_type: large
   stemcell: trusty
   azs: [z1]
   networks:
