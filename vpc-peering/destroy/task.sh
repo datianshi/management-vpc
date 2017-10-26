@@ -27,6 +27,7 @@ then
   request_subnet_cidr=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_vpc.PcfVpc"].primary.attributes.cidr_block')
   request_director_group_id=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_security_group.directorSG"].primary.attributes.id')
   request_vm_group_id=$(cat ${REQUEST_TFSTATE} | jq -r '.modules[0].resources["aws_security_group.pcfSG"].primary.attributes.id')
+  peer_group_id=$(cat ${PEERING_TFSTATE} | jq -r '.modules[0].resources["aws_security_group.directorSG"].primary.attributes.id')
 
   aws ec2 delete-route --route-table-id ${request_route_table} --destination-cidr-block ${peering_subnet_cidr}
   aws ec2 delete-route --route-table-id ${request_private_route_table_az1} --destination-cidr-block ${peering_subnet_cidr}
